@@ -1,0 +1,206 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "slug": "celebrations",
+      "title": "Celebrations",
+      "sort": 0
+    },
+    {
+      "id": 2,
+      "slug": "wedding",
+      "title": "Wedding",
+      "sort": 1
+    },
+    {
+      "id": 3,
+      "slug": "sculpted",
+      "title": "Sculpted",
+      "sort": 2
+    },
+    {
+      "id": 4,
+      "slug": "kids",
+      "title": "Kids",
+      "sort": 3
+    },
+    {
+      "id": 5,
+      "slug": "cupcakes-more",
+      "title": "Cupcakes & more",
+      "sort": 4
+    }
+  ],
+  "images": [
+    {
+      "id": 1,
+      "src": "/assets/crazy/celebration-1.jpg",
+      "alt": "Custom architectural celebration cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 0,
+      "featured": 1,
+      "category_id": 1,
+      "slug": "celebrations"
+    },
+    {
+      "id": 2,
+      "src": "/assets/crazy/wedding-1.jpg",
+      "alt": "Elegant custom wedding cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 1,
+      "featured": 1,
+      "category_id": 2,
+      "slug": "wedding"
+    },
+    {
+      "id": 3,
+      "src": "/assets/crazy/sculpted-1.jpg",
+      "alt": "Detailed sculpted novelty cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 2,
+      "featured": 1,
+      "category_id": 3,
+      "slug": "sculpted"
+    },
+    {
+      "id": 4,
+      "src": "/assets/crazy/kids-1.jpg",
+      "alt": "Colorful custom kids cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 3,
+      "featured": 1,
+      "category_id": 4,
+      "slug": "kids"
+    },
+    {
+      "id": 5,
+      "src": "/assets/crazy/cupcakes-1.jpg",
+      "alt": "Decorated cupcakes and sweet treats",
+      "width": 1400,
+      "height": 1400,
+      "sort": 4,
+      "featured": 1,
+      "category_id": 5,
+      "slug": "cupcakes-more"
+    },
+    {
+      "id": 6,
+      "src": "/assets/crazy/wedding-2.jpg",
+      "alt": "Floral tiered wedding cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 5,
+      "featured": 0,
+      "category_id": 2,
+      "slug": "wedding"
+    },
+    {
+      "id": 7,
+      "src": "/assets/crazy/sculpted-2.jpg",
+      "alt": "Handcrafted sculpted cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 6,
+      "featured": 0,
+      "category_id": 3,
+      "slug": "sculpted"
+    },
+    {
+      "id": 8,
+      "src": "/assets/crazy/kids-2.jpg",
+      "alt": "Playful birthday cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 7,
+      "featured": 0,
+      "category_id": 4,
+      "slug": "kids"
+    },
+    {
+      "id": 9,
+      "src": "/assets/crazy/celebration-2.jpg",
+      "alt": "Special occasion cake",
+      "width": 1400,
+      "height": 1400,
+      "sort": 8,
+      "featured": 0,
+      "category_id": 1,
+      "slug": "celebrations"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "author": "Heather Vagen",
+      "initials": "H",
+      "date": "9/17/2025",
+      "quote": "We think we had the best wedding cake ever!! Your Legos looked like real Legos!!! The Lego people were so us!!! And the taste of the cake and buttercream, best ever!! We received so many compliments on our cake. You helped make our day perfect, thank you so much!",
+      "rating": 5
+    },
+    {
+      "id": 2,
+      "author": "Margerita Moore",
+      "initials": "M",
+      "date": "8/4/2025",
+      "quote": "Marwa Crazy Cakes came thru again. I have had several cakes and items and was never disappointed.",
+      "rating": 5
+    },
+    {
+      "id": 3,
+      "author": "Ed Moore",
+      "initials": "E",
+      "date": "7/30/2025",
+      "quote": "Seema made a cake that looked exactly like my house because our house is 100 years old this year. What a marvelous cake! Everyone was blown away, and the cake was so delicious as well. Just stunning!",
+      "rating": 5
+    }
+  ],
+  "content": {
+    "about.communityP1": "Marwa Crazy Cakes is proudly local and licensed, serving Chagrin Falls and the greater Cleveland community with artistry backed by professionalism. Each creation is made with the highest standards of safety, quality, and care.",
+    "about.communityTitle": "Rooted in Community, Licensed for Trust",
+    "about.cta.contact": "Begin Your Cake Story",
+    "about.cta.gallery": "See Our Work",
+    "about.experienceP1": "At Marwa Crazy Cakes, the journey is as meaningful as the cake itself. For our couples, the wedding cake tasting is a cherished part of the process—a moment to pause, dream, and savor. Guests are welcomed into a warm, personalized consultation where they sample flavors, discuss inspirations, and explore designs that reflect their unique story.",
+    "about.experienceP2": "Seema listens with care, sketches ideas, and transforms visions into edible art. The process is intimate, refined, and memorable—ensuring that by the time your wedding day arrives, the cake feels like it was created exclusively for you.",
+    "about.experienceTitle": "An Experience, Not Just a Cake",
+    "about.eyebrow": "The artist, the story, the studio",
+    "about.headline": "Seema Acharya — The Artist Behind the Magic",
+    "about.imageAlt": "Seema Acharya, cake designer and sugar artist, founder of Marwa Crazy Cakes",
+    "about.intro": "Every cake begins with a story. For Seema Acharya, renowned cake artist and founder of Marwa Crazy Cakes in Chagrin Falls, OH, that story is one of artistry, imagination, and devotion to craft. Her work—spanning sculpted showpieces, towering wedding cakes, and avant-garde sugar art—has earned her recognition on Netflix's Sugar Rush, Food Network competitions, and in the pages of Cake Masters Magazine.",
+    "about.introItalic": "Seema is not just a cake designer—she is a storyteller. Her sugar creations are celebrated for their sculptural elegance, meticulous detail, and the ability to capture the essence of every occasion.",
+    "about.quote": "Marwa Crazy Cakes isn't just about cake. It's about wonder, memory, and art that you can taste.",
+    "about.title": "About Us",
+    "home.card.about.alt": "Seema Acharya, founder and cake artist at Marwa Crazy Cakes",
+    "home.card.about.blurb": "Meet Seema Acharya, the storyteller and sugar artist behind every creation.",
+    "home.card.about.title": "About Us",
+    "home.card.gallery.alt": "Custom architectural celebration cake",
+    "home.card.gallery.blurb": "Browse sculpted showpieces, wedding cakes, cupcakes and edible art.",
+    "home.card.gallery.title": "Gallery",
+    "home.card.pricing.alt": "Elegant tiered wedding cake",
+    "home.card.pricing.blurb": "Starting prices for custom, sculpted and wedding cakes, plus cupcakes.",
+    "home.card.pricing.title": "Pricing",
+    "home.card.reviews.alt": "Celebrating excellence in cake artistry",
+    "home.card.reviews.blurb": "Read what couples and families say about their Marwa Crazy Cakes experience.",
+    "home.card.reviews.title": "Reviews",
+    "home.cards.link": "Visit page",
+    "home.cta.label": "Start Your Custom Order",
+    "home.cta.text": "Ready to create your own masterpiece?",
+    "home.hero.body": "At Marwa Crazy Cakes, we transform imagination into breathtaking cakes — from sculpted masterpieces to elegant wedding designs. Each creation is a blend of artistry and flavor, crafted to leave a lasting impression.",
+    "home.hero.cta.contact": "Request a Custom Design",
+    "home.hero.cta.gallery": "Explore Our Cakes",
+    "home.hero.tagline": "Where imagination meets craftsmanship — luxury cakes sculpted into unforgettable works of art.",
+    "home.hero.title": "✨ YES, Art can be Edible! ✨",
+    "home.teaser.eyebrow": "Every visit begins with a little wonder",
+    "home.teaser.title": "Explore the Studio"
+  },
+  "eventTypes": [
+    "Wedding",
+    "Birthday",
+    "Anniversary",
+    "Corporate",
+    "Other"
+  ]
+}
