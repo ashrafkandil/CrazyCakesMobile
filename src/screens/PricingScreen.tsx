@@ -2,72 +2,58 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LocalImage, PrimaryButton, SectionHeading } from '../components/ui';
 import { fonts, palette } from '../theme';
+import { text } from '../db/database';
 import { Destination } from '../navigation/destinations';
 
-const prices: [string, string][] = [
-  ['Custom Cakes', '$150 & up'],
-  ['Sculpted Cakes', '$300 & up'],
-  ['Wedding Cakes', '$500 & up'],
-  ['Cupcakes (per dozen)', '$40 & up'],
-];
+const priceItems = ['custom', 'sculpted', 'wedding', 'cupcakes'] as const;
 
 export function PricingScreen({ navigate }: { navigate: (screen: Destination) => void }) {
   const { width } = useWindowDimensions();
   const isWide = width >= 720;
 
   const copy = (
-    <View style={{ flex: 1, maxWidth: isWide ? undefined : 560 }}>
+    <View style={{ width: '100%', maxWidth: isWide ? 680 : 560 }}>
       <Text style={styles.body}>
-        Our cakes and other goodies are thoughtfully designed for your special event and are
-        individually priced. To give you an idea of what to expect, we have provided starting prices
-        for each of our products.
+        {text('pricing.intro')}
       </Text>
       <View style={styles.table}>
         <View style={styles.tableTopBorder} />
-        {prices.map(([label, price], index) => (
-          <View key={label}>
+        {priceItems.map((item, index) => (
+          <View key={item}>
             <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>{label}</Text>
-              <Text style={styles.priceValue}>{price}</Text>
+              <Text style={styles.priceLabel}>{text(`pricing.item.${item}.label`)}</Text>
+              <Text style={styles.priceValue}>{text(`pricing.item.${item}.price`)}</Text>
             </View>
-            <View style={index === prices.length - 1 ? styles.tableBottomBorder : styles.tableTopBorder} />
+            <View style={index === priceItems.length - 1 ? styles.tableBottomBorder : styles.tableTopBorder} />
           </View>
         ))}
       </View>
       <View style={styles.quoteRow}>
-        <Text style={styles.quoteText}>Have something else in mind?</Text>
-        <PrimaryButton label="Get a quote" onPress={() => navigate(Destination.Contact)} />
+        <Text style={styles.quoteText}>{text('pricing.quotePrompt')}</Text>
+        <PrimaryButton label={text('pricing.quoteButton')} onPress={() => navigate(Destination.Contact)} />
       </View>
     </View>
   );
 
   const picture = (
-    <View style={{ flex: isWide ? 1 : undefined, width: isWide ? undefined : '100%', maxWidth: 420 }}>
+    <View style={{ width: '100%', maxWidth: 420 }}>
       <View style={styles.picture}>
         <LocalImage
-          src="/assets/crazy/pricing.jpg"
-          alt="Elegant wedding cake with multiple tiers and decorative elements"
+          src="/assets/crazy/pricing.jpeg"
+          alt={text('pricing.imageAlt')}
+          resizeMode="cover"
         />
       </View>
     </View>
   );
 
   return (
-    <ScrollView style={{ backgroundColor: palette.background }}>
+    <ScrollView style={{ backgroundColor: 'transparent' }}>
       <View style={styles.page}>
-        <SectionHeading title="Cake Pricing" eyebrow="Thoughtfully designed for your special event" />
-        <View style={{ marginTop: 48 }}>
-          {isWide ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 40 }}>
-              {copy}
-              {picture}
-            </View>
-          ) : (
-            <View style={{ gap: 36, alignItems: 'center' }}>
-              {copy}
-              {picture}
-            </View>
-          )}
+        <SectionHeading title={text('pricing.title')} eyebrow={text('pricing.eyebrow')} />
+        <View style={{ marginTop: 48, gap: 36, alignItems: 'center' }}>
+          {picture}
+          {copy}
         </View>
       </View>
     </ScrollView>

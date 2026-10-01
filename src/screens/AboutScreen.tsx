@@ -18,28 +18,21 @@ export function AboutScreen({ navigate }: { navigate: (screen: Destination) => v
 
   const portrait = (
     <View style={styles.portraitFrame}>
-      <LocalImage src="/assets/crazy/seema.png" alt={text('about.imageAlt')} resizeMode="contain" />
+      <LocalImage src="/assets/crazy/Marwa.png" alt={text('about.imageAlt')} resizeMode="cover" />
     </View>
   );
 
   return (
-    <ScrollView style={{ backgroundColor: palette.blush }}>
+    <ScrollView style={{ backgroundColor: 'transparent' }}>
       <View style={[styles.page, isWide ? styles.pageWide : styles.pageNarrow]}>
         <SectionHeading title={text('about.title')} eyebrow={text('about.eyebrow')} />
         <View style={{ marginTop: 36 }}>
           <ScriptTitle title={text('about.headline')} size={34} />
         </View>
-        {isWide ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 36, marginTop: 44 }}>
-            <View style={{ flex: 1.1 }}>{intro}</View>
-            <View style={{ flex: 0.9 }}>{portrait}</View>
-          </View>
-        ) : (
-          <View style={{ gap: 36, marginTop: 44 }}>
-            {intro}
-            {portrait}
-          </View>
-        )}
+        <View style={{ gap: 36, marginTop: 44, alignItems: 'center' }}>
+          {portrait}
+          <View style={{ width: '100%', maxWidth: 680 }}>{intro}</View>
+        </View>
 
         <View style={styles.sections}>
           <View style={{ alignItems: 'center', gap: 14 }}>

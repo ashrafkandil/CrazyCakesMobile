@@ -13,14 +13,17 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LocalImage, SocialPill, socialLinks } from '../components/ui';
+import { SectionHeading, SocialPill } from '../components/ui';
 import { eyebrowLetterSpacing, fonts, palette } from '../theme';
-import { getEventTypes } from '../db/database';
+import { getEventTypes, getSocialLinks, text } from '../db/database';
 
 export function ContactScreen() {
   const { width } = useWindowDimensions();
   const isWide = width >= 720;
   const eventTypes = getEventTypes();
+  const socialLinks = getSocialLinks();
+  const supportEmail = text('contact.email');
+  const supportPhone = text('contact.phoneHref');
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -32,6 +35,8 @@ export function ContactScreen() {
   const [theme, setTheme] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const isValid =
     name.trim().length > 0 &&
@@ -42,6 +47,35 @@ export function ContactScreen() {
     servings.trim().length > 0 &&
     theme.trim().length > 0;
 
+  const submit = async () => {
+    setSending(true);
+    setSendError(null);
+    const body = [
+      `Name: ${name.trim()}`,
+      `Email: ${email.trim()}`,
+      `Phone: ${phone.trim()}`,
+      `Event type: ${eventType}`,
+      `Event date: ${eventDate.trim()}`,
+      `Servings: ${servings.trim()}`,
+      `Location: ${location.trim() || 'Not specified'}`,
+      '',
+      theme.trim(),
+    ].join('\n');
+    const url = `mailto:${supportEmail}?subject=${encodeURIComponent(
+      `Custom quote request — ${name.trim()} (${eventType})`
+    )}&body=${encodeURIComponent(body)}`;
+    try {
+      await Linking.openURL(url);
+      setSubmitted(true);
+    } catch {
+      setSendError(
+        `We could not open your email app. Email ${supportEmail} or call ${text('contact.phone')} to send your request.`
+      );
+    } finally {
+      setSending(false);
+    }
+  };
+
   const form = (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>Request a Custom Quote</Text>
@@ -49,7 +83,7 @@ export function ContactScreen() {
         <View style={styles.thanks}>
           <Text style={styles.thanksTitle}>Thank you!</Text>
           <Text style={styles.thanksBody}>
-            Your inquiry is ready. We'll be in touch within 24 hours.
+            Your email draft is on its way to {supportEmail}. {text('contact.responseNote')}
           </Text>
         </View>
       ) : (
@@ -59,12 +93,16 @@ export function ContactScreen() {
           <Field label="Phone *" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
           <Text style={styles.fieldLabel}>Event Type *</Text>
-          <Pressable style={styles.selectBox} onPress={() => setMenuOpen(true)}>
-            <Text style={[styles.selectValue, !eventType ? styles.selectPlaceholder : null]}>
-              {eventType || 'Select event type'}
-            </Text>
-            <Ionicons name="chevron-down" size={14} color={palette.mutedForeground} />
-          </Pressable>
+          {eventTypes.length > 0 ? (
+            <Pressable style={styles.selectBox} onPress={() => setMenuOpen(true)}>
+              <Text style={[styles.selectValue, !eventType ? styles.selectPlaceholder : null]}>
+                {eventType || 'Select event type'}
+              </Text>
+              <Ionicons name="chevron-down" size={14} color={palette.mutedForeground} />
+            </Pressable>
+          ) : (
+            <Field label="" value={eventType} onChangeText={setEventType} placeholder="Wedding, Birthday…" />
+          )}
 
           <Field label="Event Date * (YYYY-MM-DD)" value={eventDate} onChangeText={setEventDate} placeholder="2026-10-15" />
           <Field label="Number of Servings *" value={servings} onChangeText={setServings} keyboardType="numeric" />
@@ -80,16 +118,24 @@ export function ContactScreen() {
             placeholderTextColor="rgba(118,104,103,0.7)"
           />
           <Pressable
-            onPress={() => setSubmitted(true)}
-            disabled={!isValid}
+            onPress={submit}
+            disabled={!isValid || sending}
             style={({ pressed }) => [
               styles.submit,
-              !isValid ? styles.submitDisabled : null,
-              pressed && isValid ? { opacity: 0.85 } : null,
+              !isValid || sending ? styles.submitDisabled : null,
+              pressed && isValid && !sending ? { opacity: 0.85 } : null,
             ]}
           >
-            <Text style={styles.submitText}>Send Inquiry</Text>
+            <Text style={styles.submitText}>
+              {sending ? 'Opening your email app…' : 'Send Inquiry'}
+            </Text>
           </Pressable>
+          {sendError ? (
+            <View style={styles.errorNote}>
+              <Ionicons name="alert-circle" size={16} color={palette.primary} />
+              <Text style={styles.errorNoteText}>{sendError}</Text>
+            </View>
+          ) : null}
         </View>
       )}
     </View>
@@ -97,36 +143,45 @@ export function ContactScreen() {
 
   const aside = (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>Get in Touch</Text>
+      <Text style={styles.cardTitle}>{text('contact.sidebarHeading')}</Text>
       <View style={{ gap: 16, marginTop: 20 }}>
-        <Pressable onPress={() => Linking.openURL('mailto:fcabakery@gmail.com')}>
-          <InfoRow icon="mail" text="fcabakery@gmail.com" />
+        <Pressable onPress={() => Linking.openURL(`mailto:${supportEmail}`)}>
+          <InfoRow icon="mail" text={supportEmail} />
         </Pressable>
-        <Pressable onPress={() => Linking.openURL('tel:12165718440')}>
-          <InfoRow icon="call" text="216.571.8440" />
+        <Pressable onPress={() => Linking.openURL(`tel:${supportPhone}`)}>
+          <InfoRow icon="call" text={text('contact.phone')} />
         </Pressable>
         <InfoRow
           icon="location-outline"
-          text="Chagrin Falls, OH 44022\nServing Bainbridge, Solon, Pepper Pike, Twinsburg, Mayfield and nearby areas"
+          text={`${text('contact.address')}\n${text('contact.serviceArea')}`}
         />
       </View>
       <View style={{ marginTop: 28, gap: 12 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <Ionicons name="share-social" size={16} color={palette.primary} />
-          <Text style={styles.asideSub}>Follow Us</Text>
+          <Text style={styles.asideSub}>{text('contact.followUs')}</Text>
         </View>
         <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
           {socialLinks.map((social) => (
-            <SocialPill key={social.label} label={social.label} url={social.url} />
+            <SocialPill key={social.id} label={social.label} url={social.href} />
           ))}
         </View>
       </View>
       <View style={styles.note}>
         <Ionicons name="calendar-outline" size={18} color={palette.primary} />
-        <Text style={styles.noteText}>
-          We'll respond to your inquiry within 24 hours. For urgent requests, please call us
-          directly.
-        </Text>
+        <Text style={styles.noteText}>{text('contact.responseNote')}</Text>
+      </View>
+      <View style={styles.appSection}>
+        <Text style={styles.asideSub}>{text('contact.appHeading')}</Text>
+        <Text style={styles.noteText}>{text('contact.appBody')}</Text>
+        <View style={styles.appLinks}>
+          <Pressable onPress={() => Linking.openURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
+            <InfoRow icon="logo-apple" text={text('contact.appStoreLabel')} />
+          </Pressable>
+          <Pressable onPress={() => Linking.openURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
+            <InfoRow icon="logo-google-playstore" text={text('contact.googlePlayLabel')} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -136,13 +191,9 @@ export function ContactScreen() {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView style={{ backgroundColor: palette.blush }} contentContainerStyle={{ paddingVertical: 56, paddingHorizontal: 20, alignItems: 'center' }}>
-        <Text style={styles.title}>Let’s Create Something Beautiful</Text>
-        <Text style={styles.eyebrow}>READY TO BRING YOUR VISION TO LIFE</Text>
-        <Text style={styles.subtitle}>
-          Get in touch to discuss your custom cake needs. We're excited to be part of your special
-          celebration.
-        </Text>
+      <ScrollView style={{ backgroundColor: 'transparent' }} contentContainerStyle={{ paddingVertical: 56, paddingHorizontal: 20, alignItems: 'center' }}>
+        <SectionHeading title={text('contact.title')} eyebrow={text('contact.eyebrow')} />
+        <Text style={styles.subtitle}>{text('contact.intro')}</Text>
 
         <View
           style={[
@@ -186,7 +237,7 @@ function Field({
   autoCapitalize = 'words',
   placeholder,
 }: {
-  label: string;
+  label?: string;
   value: string;
   onChangeText: (value: string) => void;
   keyboardType?: 'default' | 'email-address' | 'phone-pad' | 'numeric';
@@ -195,7 +246,7 @@ function Field({
 }) {
   return (
     <View>
-      <Text style={styles.fieldLabel}>{label}</Text>
+      {label ? <Text style={styles.fieldLabel}>{label}</Text> : null}
       <TextInput
         style={styles.input}
         value={value}
@@ -219,7 +270,6 @@ function InfoRow({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: s
 }
 
 const styles = StyleSheet.create({
-  title: { fontFamily: fonts.script, fontSize: 38, color: palette.primary, textAlign: 'center' },
   eyebrow: {
     fontFamily: fonts.serif,
     fontSize: 11,
@@ -284,6 +334,16 @@ const styles = StyleSheet.create({
   submit: { backgroundColor: palette.primary, borderRadius: 999, paddingVertical: 14, alignItems: 'center', marginTop: 8 },
   submitDisabled: { opacity: 0.4 },
   submitText: { fontFamily: fonts.interMedium, fontSize: 15, color: palette.primaryForeground },
+  errorNote: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+    borderWidth: 1,
+    borderColor: palette.primary,
+    borderRadius: 10,
+    padding: 12,
+  },
+  errorNoteText: { fontFamily: fonts.inter, fontSize: 13, lineHeight: 20, color: palette.foreground, flex: 1 },
   thanks: {
     backgroundColor: palette.blush,
     borderRadius: 12,
@@ -305,6 +365,8 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'flex-start',
   },
+  appSection: { marginTop: 24, gap: 12 },
+  appLinks: { gap: 12 },
   noteText: { fontFamily: fonts.inter, fontSize: 13, lineHeight: 20, color: palette.mutedForeground, flex: 1 },
   modalBackdrop: { flex: 1, backgroundColor: palette.overlay, justifyContent: 'flex-end' },
   modalSheet: {

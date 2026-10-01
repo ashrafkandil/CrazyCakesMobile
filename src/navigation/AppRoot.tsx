@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  BackHandler,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LocalImage } from '../components/ui';
+import { LocalImage, WatermarkPattern } from '../components/ui';
 import { fonts, palette } from '../theme';
 import { Destination, destinations } from './destinations';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -14,11 +22,28 @@ import { ContactScreen } from '../screens/ContactScreen';
 
 export function AppRoot() {
   const [current, setCurrent] = useState<Destination>(Destination.Home);
+  const [galleryRevision, setGalleryRevision] = useState(0);
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const useSidebar = width >= 720;
 
-  const navigate = (screen: Destination) => setCurrent(screen);
+  const navigate = (screen: Destination) => {
+    if (screen === current && screen === Destination.Gallery) {
+      setGalleryRevision((revision) => revision + 1);
+    }
+    setCurrent(screen);
+  };
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (current === Destination.Home) {
+        return false;
+      }
+      setCurrent(Destination.Home);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [current]);
 
   const screen = () => {
     switch (current) {
@@ -27,7 +52,7 @@ export function AppRoot() {
       case Destination.About:
         return <AboutScreen navigate={navigate} />;
       case Destination.Gallery:
-        return <GalleryScreen navigate={navigate} />;
+        return <GalleryScreen key={galleryRevision} navigate={navigate} />;
       case Destination.Reviews:
         return <ReviewsScreen />;
       case Destination.Pricing:
@@ -40,6 +65,7 @@ export function AppRoot() {
   if (useSidebar) {
     return (
       <View style={styles.row}>
+        <WatermarkPattern />
         <View style={[styles.sidebar, { paddingTop: insets.top + 20 }]}>
           <View style={styles.sidebarLogo}>
             <View style={styles.sidebarLogoCircle}>
@@ -47,25 +73,27 @@ export function AppRoot() {
             </View>
             <Text style={styles.sidebarBrand}>Marwa Crazy Cakes</Text>
           </View>
-          {destinations.map((item) => {
-            const active = current === item.id;
-            return (
-              <Pressable
-                key={item.id}
-                onPress={() => navigate(item.id)}
-                style={[styles.sidebarItem, active ? styles.sidebarItemActive : null]}
-              >
-                <Ionicons
-                  name={item.icon}
-                  size={20}
-                  color={active ? palette.primary : palette.mutedForeground}
-                />
-                <Text style={[styles.sidebarLabel, active ? styles.sidebarLabelActive : null]}>
-                  {item.label}
-                </Text>
-              </Pressable>
-            );
-          })}
+          <ScrollView style={styles.sidebarNav} contentContainerStyle={styles.sidebarNavContent}>
+            {destinations.map((item) => {
+              const active = current === item.id;
+              return (
+                <Pressable
+                  key={item.id}
+                  onPress={() => navigate(item.id)}
+                  style={[styles.sidebarItem, active ? styles.sidebarItemActive : null]}
+                >
+                  <Ionicons
+                    name={item.icon}
+                    size={20}
+                    color={active ? palette.primary : palette.mutedForeground}
+                  />
+                  <Text style={[styles.sidebarLabel, active ? styles.sidebarLabelActive : null]}>
+                    {item.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
         </View>
         <View style={styles.detail}>{screen()}</View>
       </View>
@@ -73,7 +101,8 @@ export function AppRoot() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: palette.background }}>
+    <View style={{ flex: 1, position: 'relative', backgroundColor: palette.background }}>
+      <WatermarkPattern />
       <View style={styles.detail}>{screen()}</View>
       <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
         {destinations.map((item) => {
@@ -97,7 +126,7 @@ export function AppRoot() {
 }
 
 const styles = StyleSheet.create({
-  row: { flex: 1, flexDirection: 'row', backgroundColor: palette.background },
+  row: { flex: 1, flexDirection: 'row', position: 'relative', backgroundColor: palette.background },
   sidebar: {
     width: 240,
     backgroundColor: palette.card,
@@ -107,6 +136,8 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   sidebarLogo: { alignItems: 'center', paddingVertical: 24, gap: 10 },
+  sidebarNav: { flex: 1 },
+  sidebarNavContent: { gap: 4, paddingBottom: 24 },
   sidebarLogoCircle: {
     width: 64,
     height: 64,

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Image } from 'expo-image';
 import {
   Linking,
   Platform,
@@ -6,28 +7,77 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { eyebrowLetterSpacing, fonts, palette } from '../theme';
 import { imageFor } from './images';
+import { getSocialLinks } from '../db/database';
 
 export function LocalImage({
   src,
   alt,
   style,
-  resizeMode = 'cover',
+  resizeMode = 'contain',
 }: {
   src: string;
   alt?: string;
   style?: object;
-  resizeMode?: 'cover' | 'contain';
+  resizeMode?: 'cover' | 'contain' | 'stretch';
 }) {
   const source = imageFor(src);
   if (!source) {
-    return <View style={[{ backgroundColor: palette.muted }, style]} />;
+    if (__DEV__) console.warn(`No bundled image is registered for ${src}`);
+    return <View style={[{ width: '100%', height: '100%', backgroundColor: palette.muted }, style]} />;
   }
-  return <Image source={source} alt={alt ?? ''} style={[StyleSheet.absoluteFill, style]} resizeMode={resizeMode} />;
+  return (
+    <Image
+      source={source}
+      alt={alt ?? ''}
+      style={[{ width: '100%', height: '100%' }, style]}
+      contentFit={resizeMode === 'stretch' ? 'fill' : resizeMode}
+      cachePolicy="memory-disk"
+      allowDownscaling
+      onError={(event) => {
+        if (__DEV__) console.error(`Failed to load image ${src}: ${event.error}`);
+      }}
+    />
+  );
+}
+
+export function WatermarkPattern({ tileSize = 88, opacity = 0.055 }: { tileSize?: number; opacity?: number }) {
+  const { width, height } = useWindowDimensions();
+  const logo = imageFor('/assets/crazy/logo.png');
+  if (!logo) return null;
+  const columns = Math.ceil(width / tileSize);
+  const rows = Math.ceil(height / tileSize);
+
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignContent: 'flex-start',
+      }}
+    >
+      {Array.from({ length: columns * rows }, (_, index) => (
+        <Image
+          key={index}
+          source={logo}
+          contentFit="contain"
+          cachePolicy="memory-disk"
+          allowDownscaling
+          style={{ width: tileSize, height: tileSize, opacity }}
+        />
+      ))}
+    </View>
+  );
 }
 
 export function ScriptTitle({
@@ -158,13 +208,8 @@ export function SocialPill({
   );
 }
 
-export const socialLinks = [
-  { label: 'Instagram', url: 'https://www.instagram.com/marwacrazycakes/' },
-  { label: 'TikTok', url: 'https://www.tiktok.com/@marwacrazycakes' },
-  { label: 'X (Twitter)', url: 'https://x.com/marwacrazycakes' },
-];
-
 export function BrandFooter() {
+  const socialLinks = getSocialLinks();
   return (
     <View style={{ backgroundColor: palette.footer, paddingVertical: 40, paddingHorizontal: 20, alignItems: 'center', gap: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -201,12 +246,9 @@ export function BrandFooter() {
       </View>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         {socialLinks.map((social) => (
-          <SocialPill key={social.label} label={social.label} url={social.url} dark />
+          <SocialPill key={social.id} label={social.label} url={social.href} dark />
         ))}
       </View>
-      <Text style={{ fontFamily: fonts.inter, fontSize: 13, color: 'rgba(248,239,239,0.75)' }}>
-        Chagrin Falls, Ohio
-      </Text>
       <Text style={{ fontFamily: fonts.inter, fontSize: 13, color: 'rgba(248,239,239,0.75)' }}>
         © 2026 Marwa Crazy Cakes. All rights reserved.
       </Text>
@@ -215,7 +257,7 @@ export function BrandFooter() {
 }
 
 export function ScreenSafe({ children }: { children: React.ReactNode }) {
-  return <View style={{ flex: 1, backgroundColor: palette.background }}>{children}</View>;
+  return <View style={{ flex: 1, backgroundColor: 'transparent' }}>{children}</View>;
 }
 
 export const platformShadow = Platform.select({

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Linking, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LocalImage, ScriptTitle, platformShadow } from '../components/ui';
 import { absoluteFillObject, eyebrowLetterSpacing, fonts, palette } from '../theme';
-import { getTestimonials, Testimonial } from '../db/database';
+import { getTestimonials, Testimonial, text } from '../db/database';
 
 const googleReviewsUrl = 'https://www.google.com/search?q=Marwa+Crazy+Cakes+Reviews';
 
 export function ReviewsScreen() {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const isWide = width >= 720;
   const [testimonials] = useState(() => getTestimonials());
   const bannerHeight = isWide ? 320 : 260;
@@ -15,34 +17,25 @@ export function ReviewsScreen() {
   const cardWidth = Math.floor(((isWide ? 860 : width) - 40 - 14 * (columns - 1)) / columns);
 
   return (
-    <ScrollView style={{ backgroundColor: palette.background }}>
-      <View style={[styles.banner, { height: bannerHeight }]}>
-        <LocalImage src="/assets/crazy/awards.jpg" alt="Celebrating excellence in cake artistry" />
+    <ScrollView style={{ backgroundColor: 'transparent' }}>
+      <View style={[styles.banner, { height: bannerHeight, marginTop: insets.top }]}>
+        <LocalImage src="/assets/crazy/Testimony.png" alt={text('reviews.hero.title')} resizeMode="cover" />
         <View style={StyleSheet.absoluteFill}>
           <View style={styles.bannerOverlay} />
         </View>
         <View style={styles.bannerContent}>
-          <ScriptTitle title="Reviews & Testimonials" size={isWide ? 44 : 36} color={palette.primaryForeground} />
-          <Text style={styles.bannerEyebrow}>CELEBRATING EXCELLENCE IN SUGAR ARTISTRY</Text>
-          <Text style={styles.bannerLine}>
-            Our dedication to craft is celebrated across every platform and occasion.
-          </Text>
+           <ScriptTitle title={text('reviews.hero.title')} size={isWide ? 44 : 36} color={palette.primary} />
+           <Text style={styles.bannerEyebrow}>{text('reviews.hero.subtitle').toUpperCase()}</Text>
+           <Text style={styles.bannerLine}>{text('reviews.hero.body')}</Text>
         </View>
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.intro}>
-          Founded by Seema Acharya, Marwa Crazy Cakes in Chagrin Falls, OH has been honored with
-          national awards, television appearances, and features in leading publications. Our
-          clients' testimonials are a testament to artistry, innovation, and dedication to crafting
-          unforgettable cakes.
-        </Text>
+        <Text style={styles.intro}>{text('reviews.intro')}</Text>
 
         <View style={{ alignItems: 'center', gap: 10, marginTop: 44 }}>
-          <Text style={styles.clientReviews}>Client Reviews</Text>
-          <Text style={styles.clientSub}>
-            Hear what our clients say about their experience with Marwa Crazy Cakes
-          </Text>
+          <Text style={styles.clientReviews}>{text('reviews.sectionTitle')}</Text>
+          <Text style={styles.clientSub}>{text('reviews.sectionSubtitle')}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14, justifyContent: 'center', marginTop: 28, maxWidth: isWide ? 900 : undefined, alignSelf: 'center', width: '100%' }}>
@@ -54,7 +47,7 @@ export function ReviewsScreen() {
         </View>
 
         <Text onPress={() => Linking.openURL(googleReviewsUrl)} suppressHighlighting style={styles.googleButton}>
-          ★ Read More Reviews on Google ★
+          {text('reviews.googleLinkText')}
         </Text>
       </View>
     </ScrollView>
@@ -89,20 +82,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 12,
   },
-  bannerEyebrow: {
-    fontFamily: fonts.serif,
-    fontSize: 11,
-    letterSpacing: eyebrowLetterSpacing,
-    color: 'rgba(254,251,251,0.9)',
-    textAlign: 'center',
-  },
-  bannerLine: {
-    fontFamily: fonts.inter,
-    fontSize: 16,
-    color: palette.primaryForeground,
-    textAlign: 'center',
-  },
-  content: { backgroundColor: palette.blush, paddingVertical: 56, paddingHorizontal: 20, alignItems: 'center' },
+   bannerEyebrow: {
+     fontFamily: fonts.serif,
+     fontSize: 11,
+     letterSpacing: eyebrowLetterSpacing,
+     color: palette.primary,
+     textAlign: 'center',
+   },
+   bannerLine: {
+     fontFamily: fonts.inter,
+     fontSize: 16,
+     color: palette.primary,
+     textAlign: 'center',
+   },
+  content: { backgroundColor: 'transparent', paddingVertical: 56, paddingHorizontal: 20, alignItems: 'center' },
   intro: {
     fontFamily: fonts.inter,
     fontSize: 15,
