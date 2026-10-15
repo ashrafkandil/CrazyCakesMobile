@@ -18,7 +18,7 @@ import {
   Eyebrow,
   platformShadow,
 } from '../components/ui';
-import { absoluteFillObject, fonts, palette } from '../theme';
+import { fonts, palette } from '../theme';
 import { text } from '../db/database';
 import { Destination } from '../navigation/destinations';
 
@@ -72,7 +72,20 @@ export function HomeScreen({ navigate }: { navigate: (screen: Destination) => vo
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<HeroSlide>>(null);
   const heroIndexRef = useRef(0);
+  const isPortrait = height >= width;
   const isWide = width >= 720;
+  const heroHeight = Math.min(
+    isPortrait ? width * 0.9 : height * 0.86,
+    isPortrait ? height * 0.56 : width * 0.45,
+    560,
+  );
+
+  useEffect(() => {
+    listRef.current?.scrollToOffset({
+      offset: heroIndexRef.current * width,
+      animated: false,
+    });
+  }, [width]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -85,7 +98,7 @@ export function HomeScreen({ navigate }: { navigate: (screen: Destination) => vo
 
   return (
     <ScrollView style={styles.screen}>
-      <View style={[styles.hero, { height: height - insets.top, marginTop: insets.top }]}>
+      <View style={[styles.hero, { height: heroHeight, marginTop: insets.top }]}>
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <FlatList
             ref={listRef}
@@ -99,12 +112,11 @@ export function HomeScreen({ navigate }: { navigate: (screen: Destination) => vo
             }}
             renderItem={({ item }) => (
               <View style={{ width, height: '100%' }}>
-                <LocalImage src={item.src} alt={item.alt} resizeMode="cover" />
+                <LocalImage src={item.src} alt={item.alt} resizeMode="contain" />
               </View>
             )}
           />
         </View>
-        <View style={styles.heroOverlay} pointerEvents="none" />
       </View>
 
       <View style={styles.heroCopy}>
@@ -152,7 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  heroOverlay: { ...absoluteFillObject, backgroundColor: palette.overlay },
   heroCopy: {
     alignItems: 'center',
     backgroundColor: palette.background,
