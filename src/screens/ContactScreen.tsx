@@ -193,18 +193,6 @@ export function ContactScreen() {
         <Ionicons name="calendar-outline" size={18} color={palette.primary} />
         <Text style={styles.noteText}>{text('contact.responseNote')}</Text>
       </View>
-      <View style={styles.appSection}>
-        <Text style={styles.asideSub}>{text('contact.appHeading')}</Text>
-        <Text style={styles.noteText}>{text('contact.appBody')}</Text>
-        <View style={styles.appLinks}>
-          <Pressable onPress={() => Linking.openURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
-            <InfoRow icon="logo-apple" text={text('contact.appStoreLabel')} />
-          </Pressable>
-          <Pressable onPress={() => Linking.openURL('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}>
-            <InfoRow icon="logo-google-playstore" text={text('contact.googlePlayLabel')} />
-          </Pressable>
-        </View>
-      </View>
     </View>
   );
 
