@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  AppState,
   BackHandler,
   Pressable,
   ScrollView,
@@ -19,16 +20,33 @@ import { GalleryScreen } from '../screens/GalleryScreen';
 import { ReviewsScreen } from '../screens/ReviewsScreen';
 import { PricingScreen } from '../screens/PricingScreen';
 import { ContactScreen } from '../screens/ContactScreen';
+import { AvatarAssistant } from '../assistant/AvatarAssistant';
+import type { AssistantPage } from '../assistant/shared';
+import { checkForContentUpdates, subscribeToContentUpdates } from '../db/database';
+
+/** Which assistant "page" a screen reports to the model. */
+const SCREEN_PAGE: Record<Destination, AssistantPage> = {
+  [Destination.Home]: '/',
+  [Destination.About]: '/about',
+  [Destination.Gallery]: '/gallery',
+  [Destination.Reviews]: '/reviews',
+  [Destination.Pricing]: '/pricing',
+  [Destination.Contact]: '/contact',
+};
 
 export function AppRoot() {
   const [current, setCurrent] = useState<Destination>(Destination.Home);
   const [galleryRevision, setGalleryRevision] = useState(0);
+  const [contentRevision, setContentRevision] = useState(0);
+  const [galleryCategory, setGalleryCategory] = useState<string | undefined>(undefined);
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const useSidebar = width >= 720;
 
-  const navigate = (screen: Destination) => {
-    if (screen === current && screen === Destination.Gallery) {
+  const navigate = (screen: Destination, options?: { galleryCategory?: string }) => {
+    if (screen === Destination.Gallery) {
+      setGalleryCategory(options?.galleryCategory);
+      // Re-mount the gallery so a fresh assistant request resets category/page.
       setGalleryRevision((revision) => revision + 1);
     }
     setCurrent(screen);
@@ -45,6 +63,20 @@ export function AppRoot() {
     return () => subscription.remove();
   }, [current]);
 
+  useEffect(() => {
+    const unsubscribe = subscribeToContentUpdates(() => {
+      setContentRevision((revision) => revision + 1);
+    });
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      void checkForContentUpdates();
+    });
+    return () => {
+      unsubscribe();
+      subscription.remove();
+    };
+  }, []);
+
   const screen = () => {
     switch (current) {
       case Destination.Home:
@@ -52,7 +84,7 @@ export function AppRoot() {
       case Destination.About:
         return <AboutScreen navigate={navigate} />;
       case Destination.Gallery:
-        return <GalleryScreen key={galleryRevision} navigate={navigate} />;
+        return <GalleryScreen key={galleryRevision} navigate={navigate} initialCategory={galleryCategory} />;
       case Destination.Reviews:
         return <ReviewsScreen />;
       case Destination.Pricing:
@@ -61,6 +93,8 @@ export function AppRoot() {
         return <ContactScreen />;
     }
   };
+
+  const assistant = <AvatarAssistant page={SCREEN_PAGE[current]} navigate={navigate} />;
 
   if (useSidebar) {
     return (
@@ -95,7 +129,8 @@ export function AppRoot() {
             })}
           </ScrollView>
         </View>
-        <View style={styles.detail}>{screen()}</View>
+        <View key={contentRevision} style={styles.detail}>{screen()}</View>
+        {assistant}
       </View>
     );
   }
@@ -103,7 +138,8 @@ export function AppRoot() {
   return (
     <View style={{ flex: 1, position: 'relative', backgroundColor: palette.background }}>
       <WatermarkPattern />
-      <View style={styles.detail}>{screen()}</View>
+      <View key={contentRevision} style={styles.detail}>{screen()}</View>
+      {assistant}
       <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
         {destinations.map((item) => {
           const active = current === item.id;

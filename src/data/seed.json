@@ -732,7 +732,7 @@
     "about.eyebrow": "The artist, the story, the magic",
     "about.headline": "Marwa Hamama — The Artist Behind the Magic",
     "about.imageAlt": "Marwa Hamama, cake designer and sugar artist, founder of Marwa Crazy Cakes",
-    "about.intro": "Every cake begins with a story. For Marwa Hamama, the cake artist and founder of Marwa Crazy Cakes in Milton, ON, that story is one of artistry, imagination, and devotion to craft. Her work spanning sculpted showpieces, towering wedding cakes, innovative cake art and contimporary sugar art has gained her recognition and wide spread acclaim across the local GTA area community and distinguished her as a premiere cake artist within the creative community.",
+    "about.intro": "Every cake begins with a story. For Marwa Hamama, the cake artist and founder of Marwa Crazy Cakes in Milton, ON, that story is one of artistry, imagination, and devotion to craft. Her work spanning sculpted showpieces, towering wedding cakes, innovative cake art and contimporary sugar art has gained her recognition and wide spread acclaim across the local great Toronto area community and distinguished her as a premiere cake artist within the creative community.",
     "about.introItalic": "Marwa transforms cake design into an art form, weaving a unique story into every creation. Renowned for their graceful structures, exquisite detail, and thoughtful reflection of each celebration, her sugar masterpieces are truly unforgettable.",
     "about.quote": "Marwa Crazy Cakes isn't just about cake. It's about wonder, memory, and art that you can taste.",
     "about.title": "About Us",
@@ -847,14 +847,6 @@
       "icon": "tiktok",
       "sort": 2,
       "active": 1
-    },
-    {
-      "id": 4,
-      "label": "X",
-      "href": "https://x.com/marwacrazycakes",
-      "icon": "x",
-      "sort": 3,
-      "active": 0
     }
   ]
 }

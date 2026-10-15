@@ -25,7 +25,14 @@
     },
     "plugins": [
       "expo-video",
-      "expo-image"
+      "expo-image",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow Marwa Crazy Cakes to use your microphone so Sprinkles can hear your question."
+        }
+      ],
+      "expo-asset"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Linking,
@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SectionHeading, SocialPill } from '../components/ui';
 import { eyebrowLetterSpacing, fonts, palette } from '../theme';
 import { getEventTypes, getSocialLinks, text } from '../db/database';
+import { clearQuoteDraft, readQuoteDraft, subscribeQuoteDraft } from '../assistant/quoteDraft';
 
 export function ContactScreen() {
   const { width } = useWindowDimensions();
@@ -24,19 +25,39 @@ export function ContactScreen() {
   const socialLinks = getSocialLinks();
   const supportEmail = text('contact.email');
   const supportPhone = text('contact.phoneHref');
+  const draft = readQuoteDraft();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [eventType, setEventType] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [servings, setServings] = useState('');
-  const [location, setLocation] = useState('');
-  const [theme, setTheme] = useState('');
+  const [name, setName] = useState(draft.name ?? '');
+  const [email, setEmail] = useState(draft.email ?? '');
+  const [phone, setPhone] = useState(draft.phone ?? '');
+  const [eventType, setEventType] = useState(draft.eventType ?? '');
+  const [eventDate, setEventDate] = useState(draft.eventDate ?? '');
+  const [servings, setServings] = useState(draft.servings ?? '');
+  const [location, setLocation] = useState(draft.location ?? '');
+  const [theme, setTheme] = useState(draft.theme ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+
+  // The AI assistant saves quote details; pick them up whenever they change.
+  useEffect(() => {
+    const applyDraft = () => {
+      const next = readQuoteDraft();
+      if (Object.keys(next).length === 0) return;
+      if (next.name) setName(next.name);
+      if (next.email) setEmail(next.email);
+      if (next.phone) setPhone(next.phone);
+      if (next.eventType && eventTypes.includes(next.eventType)) setEventType(next.eventType);
+      if (next.eventDate) setEventDate(next.eventDate);
+      if (next.servings) setServings(next.servings);
+      if (next.location) setLocation(next.location);
+      if (next.theme) setTheme(next.theme);
+      setSubmitted(false);
+    };
+    applyDraft();
+    return subscribeQuoteDraft(applyDraft);
+  }, [eventTypes]);
 
   const isValid =
     name.trim().length > 0 &&
@@ -66,6 +87,7 @@ export function ContactScreen() {
     )}&body=${encodeURIComponent(body)}`;
     try {
       await Linking.openURL(url);
+      clearQuoteDraft();
       setSubmitted(true);
     } catch {
       setSendError(

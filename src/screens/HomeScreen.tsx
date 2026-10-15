@@ -85,7 +85,7 @@ export function HomeScreen({ navigate }: { navigate: (screen: Destination) => vo
 
   return (
     <ScrollView style={styles.screen}>
-          <View style={[styles.hero, { height: height - insets.top, marginTop: insets.top }]}>
+      <View style={[styles.hero, { height: height - insets.top, marginTop: insets.top }]}>
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <FlatList
             ref={listRef}
@@ -99,33 +99,30 @@ export function HomeScreen({ navigate }: { navigate: (screen: Destination) => vo
             }}
             renderItem={({ item }) => (
               <View style={{ width, height: '100%' }}>
-                 <LocalImage src={item.src} alt={item.alt} resizeMode="cover" />
+                <LocalImage src={item.src} alt={item.alt} resizeMode="cover" />
               </View>
             )}
           />
         </View>
         <View style={styles.heroOverlay} pointerEvents="none" />
-        <View
-          style={[
-            styles.heroContent,
-            { paddingTop: 72, paddingBottom: insets.bottom + 40 },
-          ]}
-          pointerEvents="box-none"
-        >
-          <ScriptTitle
-            title={text('home.hero.title')}
-            size={isWide ? 52 : 38}
-            color={palette.primaryForeground}
+      </View>
+
+      <View style={styles.heroCopy}>
+        <ScriptTitle
+          title={text('home.hero.title')}
+          size={isWide ? 52 : 38}
+        />
+        <Eyebrow text={text('home.hero.tagline')} />
+        <Text style={styles.heroBody}>{text('home.hero.body')}</Text>
+        <View style={styles.heroButtons}>
+          <PrimaryButton
+            label={text('home.hero.cta.gallery')}
+            onPress={() => navigate(Destination.Gallery)}
           />
-          <Eyebrow text={text('home.hero.tagline')} color="rgba(254,251,251,0.92)" />
-          <Text style={styles.heroBody}>{text('home.hero.body')}</Text>
-          <View style={styles.heroButtons}>
-            <PrimaryButton label={text('home.hero.cta.gallery')} onPress={() => navigate(Destination.Gallery)} />
-             <PrimaryButton
-               label={text('home.hero.cta.contact')}
-               onPress={() => navigate(Destination.Contact)}
-             />
-          </View>
+          <PrimaryButton
+            label={text('home.hero.cta.contact')}
+            onPress={() => navigate(Destination.Contact)}
+          />
         </View>
       </View>
 
@@ -156,22 +153,23 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   heroOverlay: { ...absoluteFillObject, backgroundColor: palette.overlay },
-  heroContent: {
+  heroCopy: {
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: palette.background,
     paddingHorizontal: 28,
-    gap: 6,
+    paddingTop: 32,
+    paddingBottom: 40,
+    gap: 8,
   },
-     heroBody: {
-       fontFamily: fonts.inter,
-       fontSize: 15,
-       lineHeight: 24,
-       // Use the same dark primary color as the title
-       color: palette.primary,
-       textAlign: 'center',
-       marginTop: 12,
-       maxWidth: 640,
-     },
+  heroBody: {
+    fontFamily: fonts.inter,
+    fontSize: 15,
+    lineHeight: 24,
+    color: palette.mutedForeground,
+    textAlign: 'center',
+    marginTop: 12,
+    maxWidth: 640,
+  },
   heroButtons: { flexDirection: 'row', gap: 12, marginTop: 24 },
    teasers: { backgroundColor: 'transparent', paddingVertical: 24, paddingHorizontal: 20 },
   cardList: { marginTop: 40, gap: 16, width: '100%', maxWidth: 720, alignSelf: 'center' },

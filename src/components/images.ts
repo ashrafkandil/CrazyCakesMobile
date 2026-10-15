@@ -1,7 +1,6 @@
 import type { ImageRequireSource } from "react-native";
 
 const imageRegistry: Record<string, number> = {
-  "/assets/crazy/awards.jpg": require("../../assets/images/awards.jpg"),
   "/assets/crazy/celebration-1.JPEG": require("../../assets/images/celebration-1.jpeg"),
   "/assets/crazy/Celebrations/0_IMG_3530.JPEG": require("../../assets/images/Celebrations/0_IMG_3530.jpeg"),
   "/assets/crazy/Celebrations/1_IMG_4901.JPEG": require("../../assets/images/Celebrations/1_IMG_4901.jpeg"),
@@ -30,7 +29,6 @@ const imageRegistry: Record<string, number> = {
   "/assets/crazy/Celebrations/4_IMG_4937.JPEG": require("../../assets/images/Celebrations/4_IMG_4937.jpeg"),
   "/assets/crazy/Celebrations/5_IMG_4873.JPEG": require("../../assets/images/Celebrations/5_IMG_4873.jpeg"),
   "/assets/crazy/Celebrations/6_IMG_4884.JPEG": require("../../assets/images/Celebrations/6_IMG_4884.jpeg"),
-  "/assets/crazy/Celebrations/7_IMG_4643.JPEG": require("../../assets/images/Celebrations/7_IMG_4643.jpeg"),
   "/assets/crazy/Celebrations/8_IMG_0811.JPEG": require("../../assets/images/Celebrations/8_IMG_0811.jpeg"),
   "/assets/crazy/Celebrations/9_IMG_4909.JPEG": require("../../assets/images/Celebrations/9_IMG_4909.jpeg"),
   "/assets/crazy/Cupcakes & more/0_IMG_4858.JPEG": require("../../assets/images/Cupcakes & more/0_IMG_4858.jpeg"),

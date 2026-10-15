@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image } from 'expo-image';
 import {
   Linking,
@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { eyebrowLetterSpacing, fonts, palette } from '../theme';
 import { imageFor } from './images';
+import { contentMediaUrl } from './media';
 import { getSocialLinks } from '../db/database';
 
 export function LocalImage({
@@ -25,7 +26,15 @@ export function LocalImage({
   style?: object;
   resizeMode?: 'cover' | 'contain' | 'stretch';
 }) {
-  const source = imageFor(src);
+  const bundledSource = imageFor(src);
+  const remoteSource = contentMediaUrl(src);
+  const [remoteFailed, setRemoteFailed] = useState(false);
+  const source = remoteSource && !remoteFailed ? remoteSource : bundledSource;
+
+  useEffect(() => {
+    setRemoteFailed(false);
+  }, [src, remoteSource]);
+
   if (!source) {
     if (__DEV__) console.warn(`No bundled image is registered for ${src}`);
     return <View style={[{ width: '100%', height: '100%', backgroundColor: palette.muted }, style]} />;
@@ -39,6 +48,10 @@ export function LocalImage({
       cachePolicy="memory-disk"
       allowDownscaling
       onError={(event) => {
+        if (remoteSource && !remoteFailed) {
+          setRemoteFailed(true);
+          return;
+        }
         if (__DEV__) console.error(`Failed to load image ${src}: ${event.error}`);
       }}
     />
@@ -47,7 +60,7 @@ export function LocalImage({
 
 export function WatermarkPattern({ tileSize = 88, opacity = 0.055 }: { tileSize?: number; opacity?: number }) {
   const { width, height } = useWindowDimensions();
-  const logo = imageFor('/assets/crazy/logo.png');
+  const logo = contentMediaUrl('/assets/crazy/logo.png') ?? imageFor('/assets/crazy/logo.png');
   if (!logo) return null;
   const columns = Math.ceil(width / tileSize);
   const rows = Math.ceil(height / tileSize);

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import {
@@ -16,11 +16,18 @@ import { fonts, palette } from '../theme';
 import { GalleryImage, GalleryVideo, getGallery, text } from '../db/database';
 import { Destination } from '../navigation/destinations';
 import { videoFor } from '../components/images';
+import { contentMediaUrl } from '../components/media';
 
-export function GalleryScreen({ navigate }: { navigate: (screen: Destination) => void }) {
+export function GalleryScreen({
+  navigate,
+  initialCategory,
+}: {
+  navigate: (screen: Destination) => void;
+  initialCategory?: string;
+}) {
   const { width } = useWindowDimensions();
   const isWide = width >= 720;
-  const [category, setCategory] = useState('all');
+  const [category, setCategory] = useState(initialCategory ?? 'all');
   const [page, setPage] = useState(1);
   const [shuffleSeed, setShuffleSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const [lightbox, setLightbox] = useState<{ image: GalleryImage; images: GalleryImage[] } | null>(null);
@@ -199,27 +206,42 @@ function VideoLightbox({
   onClose: () => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
+  const remoteFallbackAttempted = useRef(false);
   const current = videos[index];
-  const source = videoFor(current.src) ?? null;
+  const bundledSource = videoFor(current.src);
+  const remoteSource = contentMediaUrl(current.src);
+  const source = remoteSource ?? bundledSource ?? null;
   const player = useVideoPlayer(source, (instance) => {
     instance.loop = false;
     instance.play();
   });
 
   useEffect(() => {
+    remoteFallbackAttempted.current = false;
     if (source === null && __DEV__) console.warn(`No bundled video is registered for ${current.src}`);
     const subscription = player.addListener('statusChange', ({ status, error }) => {
-      if (status === 'error' && __DEV__) {
+      if (
+        status === 'error' &&
+        remoteSource &&
+        bundledSource !== undefined &&
+        !remoteFallbackAttempted.current
+      ) {
+        remoteFallbackAttempted.current = true;
+        player.replace(bundledSource);
+        player.play();
+      } else if (status === 'error' && __DEV__) {
         console.error(`Failed to load video ${current.src}: ${error?.message ?? 'Unknown video error'}`);
       }
     });
     return () => subscription.remove();
-  }, [current.src, player, source]);
+  }, [bundledSource, current.src, player, remoteSource, source]);
 
   function showVideo(step: number) {
     const nextIndex = (index + step + videos.length) % videos.length;
     setIndex(nextIndex);
-    const nextSource = videoFor(videos[nextIndex]!.src);
+    remoteFallbackAttempted.current = false;
+    const nextVideo = videos[nextIndex]!;
+    const nextSource = contentMediaUrl(nextVideo.src) ?? videoFor(nextVideo.src);
     if (nextSource !== undefined) player.replace(nextSource);
     player.play();
   }
