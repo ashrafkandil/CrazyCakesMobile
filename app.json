@@ -32,7 +32,8 @@
           "microphonePermission": "Allow Marwa Crazy Cakes to use your microphone so Sprinkles can hear your question."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-sqlite"
     ]
   }
 }
